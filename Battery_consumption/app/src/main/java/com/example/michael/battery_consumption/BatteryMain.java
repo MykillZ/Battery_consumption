@@ -19,11 +19,16 @@ public class BatteryMain extends Activity {
     private Brightness brightness;
     private MeasureSensors measureSensors;
     private Location location;
+    private BluetoothScanner blueScanner;
+    private MediaPlayerBackground mediaPlayer;
+    private CheckBox bluetoothCheckBox;
     private CheckBox flashLightCheckBox;
     private CheckBox brightnessCheckBox;
     private CheckBox sensorCheckBox;
     private CheckBox locationCheckBox;
+    private CheckBox mediaPlayerCheckBox;
     private LogManager logManager;
+    private static int REQUEST_ENABLE_BT=50;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +59,7 @@ public class BatteryMain extends Activity {
         SensorManager mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         measureSensors = new MeasureSensors(mSensorManager,logManager.getLogger("Sensors"));
         sensorCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     measureSensors.registerSensors();
@@ -84,11 +90,42 @@ public class BatteryMain extends Activity {
         locationCheckBox = (CheckBox) findViewById(R.id.locationCheckBox);
         location = new Location(locationManager,logManager.getLogger("Location"), this);
         locationCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     location.enableLocation();
                 } else {
                     location.disableLocation();
+                }
+            }
+        });
+
+        //use Bluetooth
+        logManager.addLogger(Logger.getLogger("Bluetooth"));
+        bluetoothCheckBox = (CheckBox) findViewById(R.id.bluetoothCheckBox);
+        blueScanner = new BluetoothScanner(logManager.getLogger("Bluetooth"), this);
+        bluetoothCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    blueScanner.activateScanner();
+                }else{
+                    blueScanner.deactivateScanner();
+                }
+            }
+        });
+
+        //MediaPlayer
+        logManager.addLogger(Logger.getLogger("MediaPlayer"));
+        mediaPlayerCheckBox = (CheckBox) findViewById(R.id.mediaPlayerCheckBox);
+        mediaPlayer = new MediaPlayerBackground(Logger.getLogger("MediaPlayer"),this);
+        mediaPlayerCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mediaPlayer.playMovie();
+                }else{
+                    mediaPlayer.stopMovie();
                 }
             }
         });
@@ -109,6 +146,12 @@ public class BatteryMain extends Activity {
         if(locationCheckBox.isChecked()){
             location.enableLocation();
         }
+        if(bluetoothCheckBox.isChecked()){
+            blueScanner.activateScanner();
+        }
+        if(mediaPlayerCheckBox.isChecked()){
+            mediaPlayer.playMovie();
+        }
     }
 
     @Override
@@ -126,5 +169,31 @@ public class BatteryMain extends Activity {
         if (locationCheckBox.isChecked()) {
             location.disableLocation();
         }
+        if(bluetoothCheckBox.isChecked()){
+            blueScanner.deactivateScanner();
+        }
+        if(mediaPlayerCheckBox.isChecked()){
+            mediaPlayer.stopMovie();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(REQUEST_ENABLE_BT == requestCode){
+            switch(resultCode){
+                case Activity.RESULT_OK:
+                    blueScanner.setEnable();
+                    break;
+                case Activity.RESULT_CANCELED:
+                    blueScanner.setDisabled();
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode) {
+        super.startActivityForResult(intent, requestCode);
     }
 }
