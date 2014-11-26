@@ -61,6 +61,7 @@ public class WifiScanner {
                 resultList = resultList + rList.get(i).toString() + "\\n ";
             }
             wifiLogger.log(Level.INFO, "Scanresult: " + resultList);
+            wManager.startScan();
         }
     }
 }
