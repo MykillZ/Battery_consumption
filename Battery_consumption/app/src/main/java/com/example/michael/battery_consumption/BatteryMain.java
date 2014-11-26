@@ -21,14 +21,17 @@ public class BatteryMain extends Activity {
     private Location location;
     private BluetoothScanner blueScanner;
     private MediaPlayerBackground mediaPlayer;
+    private WifiScanner wifiScanner;
     private CheckBox bluetoothCheckBox;
     private CheckBox flashLightCheckBox;
     private CheckBox brightnessCheckBox;
     private CheckBox sensorCheckBox;
     private CheckBox locationCheckBox;
     private CheckBox mediaPlayerCheckBox;
+    private CheckBox wifiScannerCheckBox;
     private LogManager logManager;
     private static int REQUEST_ENABLE_BT=50;
+    private static int REQUEST_SCAN_ALWAYS_AVAILABLE = 2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,6 +132,21 @@ public class BatteryMain extends Activity {
                 }
             }
         });
+
+        //WifiScanner
+        logManager.addLogger(Logger.getLogger("WifiScanner"));
+        wifiScannerCheckBox = (CheckBox) findViewById(R.id.wifiScannercheckBox);
+        wifiScanner = new WifiScanner(Logger.getLogger("WifiScanner"),this);
+        wifiScannerCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    wifiScanner.startScan();
+                }else{
+                    wifiScanner.stopScan();
+                }
+            }
+        });
     }
 
     @Override
@@ -152,6 +170,9 @@ public class BatteryMain extends Activity {
         if(mediaPlayerCheckBox.isChecked()){
             mediaPlayer.playMovie();
         }
+        if(wifiScannerCheckBox.isChecked()){
+            wifiScanner.startScan();
+        }
     }
 
     @Override
@@ -174,6 +195,9 @@ public class BatteryMain extends Activity {
         }
         if(mediaPlayerCheckBox.isChecked()){
             mediaPlayer.stopMovie();
+        }
+        if(wifiScannerCheckBox.isChecked()){
+            wifiScanner.stopScan();
         }
     }
 

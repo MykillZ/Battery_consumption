@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
+import android.view.WindowManager;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,6 +39,7 @@ public class MediaPlayerBackground extends Service implements MediaPlayer.OnPrep
 
 
     public void playMovie(){
+        movieLogger.log(Level.INFO,"Initialise MediaPlayer");
         mP = new MediaPlayer();
         String url = "https://ia600401.us.archive.org/19/items/ksnn_compilation_master_the_internet/ksnn_compilation_master_the_internet_512kb.mp4";
         mP.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -57,6 +59,7 @@ public class MediaPlayerBackground extends Service implements MediaPlayer.OnPrep
     }
 
     public void stopMovie(){
+        movieLogger.log(Level.INFO,"Stop MediaPlayer");
         mP.stop();
         mP.release();
         mP = null;
@@ -64,7 +67,7 @@ public class MediaPlayerBackground extends Service implements MediaPlayer.OnPrep
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        mP.setScreenOnWhilePlaying(true);
+        movieLogger.log(Level.INFO,"start movie");
         mP.start();
     }
 
@@ -91,21 +94,28 @@ public class MediaPlayerBackground extends Service implements MediaPlayer.OnPrep
 
             case AudioManager.AUDIOFOCUS_LOSS:
                 // Lost focus for an unbounded amount of time: stop playback and release media player
-                if (mP.isPlaying()) mP.stop();
-                mP.release();
+                if(mP != null) {
+                    if (mP.isPlaying()) mP.stop();
+                    movieLogger.log(Level.INFO, "MediaPlayer lost Audio focus");
+                    mP.release();
+                }
                 break;
 
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 // Lost focus for a short time, but we have to stop
                 // playback. We don't release the media player because playback
                 // is likely to resume
-                if (mP.isPlaying()) mP.pause();
+                if(mP != null) {
+                    if (mP.isPlaying()) mP.pause();
+                }
                 break;
 
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 // Lost focus for a short time, but it's ok to keep playing
                 // at an attenuated level
-                if (mP.isPlaying()) mP.setVolume(0.1f, 0.1f);
+                if(mP !=null) {
+                    if (mP.isPlaying()) mP.setVolume(0.1f, 0.1f);
+                }
                 break;
         }
     }
