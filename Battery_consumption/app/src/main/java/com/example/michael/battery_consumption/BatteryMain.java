@@ -22,6 +22,7 @@ public class BatteryMain extends Activity {
     private BluetoothScanner blueScanner;
     private MediaPlayerBackground mediaPlayer;
     private WifiScanner wifiScanner;
+    private VibratorSensor vibratorSensor;
     private CheckBox bluetoothCheckBox;
     private CheckBox flashLightCheckBox;
     private CheckBox brightnessCheckBox;
@@ -29,6 +30,7 @@ public class BatteryMain extends Activity {
     private CheckBox locationCheckBox;
     private CheckBox mediaPlayerCheckBox;
     private CheckBox wifiScannerCheckBox;
+    private CheckBox vibratorCheckBox;
     private LogManager logManager;
     private static int REQUEST_ENABLE_BT=50;
     private static int REQUEST_SCAN_ALWAYS_AVAILABLE = 2;
@@ -147,6 +149,22 @@ public class BatteryMain extends Activity {
                 }
             }
         });
+
+        //Vibrator
+        logManager.addLogger(Logger.getLogger("Vibrator"));
+        vibratorCheckBox = (CheckBox) findViewById(R.id.vibrateCheckBox);
+        vibratorSensor = new VibratorSensor(this,Logger.getLogger("Vibrator"));
+        vibratorCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    vibratorSensor.enableVibrate();
+                }else{
+                    vibratorSensor.disableVibrate();
+                }
+            }
+        });
+
     }
 
     @Override
@@ -173,6 +191,9 @@ public class BatteryMain extends Activity {
         if(wifiScannerCheckBox.isChecked()){
             wifiScanner.startScan();
         }
+        if(vibratorCheckBox.isChecked()){
+            vibratorSensor.enableVibrate();
+        }
     }
 
     @Override
@@ -198,6 +219,9 @@ public class BatteryMain extends Activity {
         }
         if(wifiScannerCheckBox.isChecked()){
             wifiScanner.stopScan();
+        }
+        if(vibratorCheckBox.isChecked()){
+            vibratorSensor.disableVibrate();
         }
     }
 

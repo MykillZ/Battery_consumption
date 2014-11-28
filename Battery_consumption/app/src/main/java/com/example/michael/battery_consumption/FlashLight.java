@@ -19,16 +19,23 @@ public class FlashLight {
     FlashLight(Logger l, Context context){
         flashLog = l;
         c = context;
+        cam = null;
     }
 
     void flashLightOn(){
         if(c.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
-            cam = Camera.open();
-            Camera.Parameters params = cam.getParameters();
-            params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-            cam.setParameters(params);
-            cam.startPreview();
-            flashLog.info("Light turned on");
+            if(cam == null) {
+                cam = Camera.open();
+                Camera.Parameters params = cam.getParameters();
+                params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                cam.setParameters(params);
+                cam.startPreview();
+                flashLog.info("Light turned on");
+            }else{
+                cam.release();
+                cam = null;
+                this.flashLightOn();
+            }
         }else{
             flashLog.log(Level.SEVERE,"No torchlight available");
         }
@@ -36,11 +43,14 @@ public class FlashLight {
 
     void flashLightOff(){
         if(c.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
-            Camera.Parameters params = cam.getParameters();
-            params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-            cam.setParameters(params);
-            cam.stopPreview();
-            cam.release();
+            if(cam != null) {
+                Camera.Parameters params = cam.getParameters();
+                params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                cam.setParameters(params);
+                cam.stopPreview();
+                cam.release();
+                cam = null;
+            }
             flashLog.info("Light turned off");
         }
     }

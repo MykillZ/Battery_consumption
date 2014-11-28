@@ -74,4 +74,14 @@
         android:layout_alignRight="@+id/mediaPlayerCheckBox"
         android:layout_alignEnd="@+id/mediaPlayerCheckBox" />
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vibrate"
+        android:id="@+id/vibrateCheckBox"
+        android:layout_below="@+id/wifiScannercheckBox"
+        android:layout_alignLeft="@+id/wifiScannercheckBox"
+        android:layout_alignStart="@+id/wifiScannercheckBox"
+        android:checked="false" />
+
 </RelativeLayout>
