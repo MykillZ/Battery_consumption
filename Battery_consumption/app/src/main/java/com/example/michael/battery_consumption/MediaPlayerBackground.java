@@ -41,7 +41,8 @@ public class MediaPlayerBackground extends Service implements MediaPlayer.OnPrep
     public void playMovie(){
         movieLogger.log(Level.INFO,"Initialise MediaPlayer");
         mP = new MediaPlayer();
-        String url = "https://ia600401.us.archive.org/19/items/ksnn_compilation_master_the_internet/ksnn_compilation_master_the_internet_512kb.mp4";
+        //String url = "https://ia600401.us.archive.org/19/items/ksnn_compilation_master_the_internet/ksnn_compilation_master_the_internet_512kb.mp4";
+        String url = "http://mirrorblender.top-ix.org/peach/bigbuckbunny_movies/big_buck_bunny_1080p_surround.avi";
         mP.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mP.setLooping(true);
         mP.setOnPreparedListener(this);

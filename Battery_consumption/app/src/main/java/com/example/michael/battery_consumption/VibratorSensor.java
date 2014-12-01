@@ -23,7 +23,7 @@ public class VibratorSensor {
 
     public void enableVibrate(){
        if(v.hasVibrator()){
-           long[] pattern = {0, 1};
+           long[] pattern = {0, 30000, 0};
            v.vibrate(pattern,0);
            vibrateLogger.log(Level.INFO,"Activate Vibrator ^^");
        }else{
